@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import type {
   CommissionSummary,
   Person,
@@ -15,7 +15,7 @@ import {
   STORAGE_KEY,
 } from '../utils/commission'
 
-const loadPeople = () => {
+export const loadLocalPeople = () => {
   try {
     const storedPeople = localStorage.getItem(STORAGE_KEY)
     if (storedPeople) return parseStoredPeople(storedPeople)
@@ -23,7 +23,7 @@ const loadPeople = () => {
     const legacyPeople = LEGACY_STORAGE_KEYS
       .map((key) => localStorage.getItem(key))
       .find((value) => value !== null)
-    if (!legacyPeople) return initialPeople
+    if (!legacyPeople) return null
 
     const migratedPeople = parseStoredPeople(legacyPeople)
     const hasAna = migratedPeople.some(
@@ -37,16 +37,12 @@ const loadPeople = () => {
           { id: 'ana', name: 'Ana', percentage: 10, fixedAmount: 33.33, sales: [] },
         ]
   } catch {
-    return initialPeople
+    return null
   }
 }
 
-export function useCommissionPeople() {
-  const [people, setPeople] = useState<Person[]>(loadPeople)
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(people))
-  }, [people])
+export function useCommissionPeople(initial: Person[] = initialPeople) {
+  const [people, setPeople] = useState<Person[]>(initial)
 
   const orderedPeople = useMemo(() => sortPeople(people), [people])
 
@@ -158,5 +154,6 @@ export function useCommissionPeople() {
     addSale,
     updateSale,
     removeSale,
+    replacePeople: setPeople,
   }
 }

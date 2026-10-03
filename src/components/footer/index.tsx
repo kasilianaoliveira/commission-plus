@@ -10,7 +10,7 @@ export function Footer() {
         </span>
         Comissão<span>+</span>
       </span>
-      <p>Os dados ficam salvos neste navegador.</p>
+      <p>Os dados da equipe são salvos na sua conta.</p>
     </footer>
   )
 }

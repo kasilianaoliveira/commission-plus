@@ -1,6 +1,6 @@
 # Evolução do Comissão+
 
-Status: escopo acordado para implementação futura. Este documento não descreve funcionalidades já disponíveis.
+Status: planejamento da evolução. A primeira etapa de Supabase, autenticação e salvamento do estado atual foi implementada no código. Veja [a configuração do Supabase](supabase.md). Histórico diário, relatórios PDF e backup JSON ainda são etapas futuras.
 
 ## Objetivo
 
@@ -9,11 +9,11 @@ Evoluir a calculadora atual para um sistema com contas de administradores/gerent
 ## Situação atual
 
 - Interface em React, TypeScript e Vite.
-- Pessoas e vendas salvas no `localStorage` do navegador, sem sincronização entre dispositivos.
+- Pessoas e vendas atuais salvas na conta do gerente quando o Supabase está configurado. Dados antigos do `localStorage` podem ser importados manualmente.
 - Vendas sem data: o estado atual não constitui um histórico diário.
 - Percentual e valor fixo configurados por pessoa.
 - Exportação do resumo atual em PNG.
-- Sem autenticação ou banco de dados remoto.
+- Login de gerente e persistência remota implementados no código; dependem da configuração de um projeto Supabase e da aplicação da migração SQL.
 
 ## Escopo acordado
 

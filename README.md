@@ -18,7 +18,7 @@ React · TypeScript · Vite
 
 O Comissão+ é uma aplicação para calcular comissões a partir das vendas de cada pessoa. Cada integrante tem seu próprio percentual e valor fixo, enquanto o resumo reúne o total vendido e o total em comissões da equipe.
 
-Tudo funciona no navegador, com salvamento local automático e exportação do resumo em PNG para compartilhar.
+A calculadora salva o estado atual da equipe na conta do gerente via Supabase e exporta o resumo em PNG. Para configurar o projeto Supabase, veja [Configuração do Supabase](docs/supabase.md).
 
 O escopo da próxima versão — login de gerentes, equipes próprias, histórico diário, relatórios em PDF e backup/importação em JSON — está documentado em [Evolução do produto](docs/evolucao-do-produto.md). Essas funcionalidades ainda não estão implementadas.
 
@@ -30,7 +30,7 @@ O escopo da próxima versão — login de gerentes, equipes próprias, históric
 - **Cálculo imediato:** veja a comissão percentual, o valor fixo e o total de cada pessoa.
 - **Resumo da equipe:** acompanhe o total vendido, o total em comissões e a quantidade de pessoas.
 - **Exportação em PNG:** baixe uma imagem com a data, os totais e o detalhamento por pessoa.
-- **Salvamento automático:** os dados são mantidos no `localStorage` do navegador.
+- **Salvamento automático na conta:** com Supabase configurado, as alterações são gravadas na área do gerente. Dados locais da versão anterior podem ser importados manualmente.
 
 ## Como funciona o cálculo
 
@@ -64,10 +64,11 @@ Na pasta do projeto, execute:
 
 ```bash
 pnpm install
+cp .env.example .env.local
 pnpm dev
 ```
 
-Abra o endereço indicado no terminal — normalmente, `http://localhost:5173`.
+Antes de iniciar, preencha `.env.local` e aplique a migração SQL no projeto Supabase conforme [as instruções de configuração](docs/supabase.md). Abra o endereço indicado no terminal — normalmente, `http://localhost:5173`.
 
 ### Comandos disponíveis
 
@@ -77,6 +78,7 @@ Abra o endereço indicado no terminal — normalmente, `http://localhost:5173`.
 | `pnpm build` | Verifica os tipos e gera a aplicação em `dist/`. |
 | `pnpm preview` | Disponibiliza o build para conferência local. |
 | `pnpm lint` | Verifica o código com ESLint. |
+| `pnpm test` | Verifica as regras de senha. |
 
 Para conferir a versão de produção localmente:
 
@@ -87,17 +89,19 @@ pnpm preview
 
 ## Como usar
 
-1. Edite o nome, o percentual e o valor fixo de cada pessoa.
-2. Digite o valor de uma venda. Ao sair do campo, `100` será exibido como `100,00`.
-3. Clique em **Adicionar venda** para registrar outros valores para a mesma pessoa.
-4. Confira os totais individuais e o **Resumo do dia**.
-5. Clique em **Exportar imagem** para baixar o resumo em PNG.
+1. Crie uma conta de gerente ou entre com e-mail e senha.
+2. Se quiser trazer os dados salvos anteriormente neste navegador, use **Importar pessoas e vendas atuais**.
+3. Edite o nome, o percentual e o valor fixo de cada pessoa.
+4. Digite o valor de uma venda. Ao sair do campo, `100` será exibido como `100,00`.
+5. Clique em **Adicionar venda** para registrar outros valores para a mesma pessoa.
+6. Confira os totais individuais e o **Resumo do dia**; aguarde a indicação **Salvo na nuvem**.
+7. Clique em **Exportar imagem** para baixar o resumo em PNG.
 
 Use **Adicionar pessoa** para incluir integrantes na equipe. Os botões de remoção permitem excluir uma venda ou uma pessoa.
 
 ### Onde os dados ficam salvos?
 
-Os dados ficam no navegador usado para acessar a aplicação e continuam disponíveis após recarregar a página. Não há sincronização entre dispositivos ou navegadores. Limpar os dados do site também remove os registros salvos.
+Com Supabase configurado, os dados atuais ficam na conta do gerente e podem ser acessados em outros dispositivos. Dados salvos anteriormente no navegador podem ser importados manualmente após o login. A configuração está em [docs/supabase.md](docs/supabase.md).
 
 O resumo apresenta os valores atuais da tela; os registros não são separados automaticamente por dia. A imagem exportada inclui a data da exportação.
 
@@ -109,9 +113,12 @@ O resumo apresenta os valores atuais da tela; os registros não são separados a
 | TypeScript | Tipagem dos dados e do código. |
 | Vite 8 | Desenvolvimento e build. |
 | Lucide React | Ícones da interface. |
+| React Hook Form | Estado, validação e envio dos formulários de autenticação. |
+| TanStack React Query | Consultas, cache e mutações dos dados do Supabase. |
 | CSS Modules | Estilos isolados por componente. |
 | Canvas API | Geração do resumo em PNG. |
-| localStorage | Persistência local. |
+| Supabase Auth e PostgreSQL | Login e persistência dos dados atuais da equipe. |
+| localStorage | Fonte dos dados da versão anterior para importação opcional. |
 | ESLint | Verificação do código. |
 
 ## Estrutura do projeto
@@ -127,9 +134,16 @@ src/
 │   ├── hero/
 │   ├── summary-cards/
 │   ├── commission-section/
-│   └── person-card/
+│   ├── person-card/
+│   ├── auth-panel/
+│   └── password-update/
 ├── hooks/
-│   └── use-commission-people.ts # Estado, edição e persistência da equipe
+│   ├── use-auth.ts       # Sessão e saída da conta
+│   ├── use-workspace.ts  # Consulta e salvamento da área do gerente
+│   └── use-commission-people.ts # Estado e edição da equipe
+├── lib/
+│   ├── query-client.ts   # Configuração do cache do React Query
+│   └── supabase.ts       # Cliente Supabase
 ├── types/
 │   └── commission.ts     # Tipos de pessoas, vendas e totais
 ├── utils/
@@ -137,13 +151,16 @@ src/
 │   └── export-summary.ts  # Geração e download do PNG
 ├── index.css             # Tokens, estilos básicos e acessibilidade globais
 └── main.tsx              # Entrada da aplicação
+supabase/migrations/      # Estrutura e permissões do banco
 ```
 
 ## Desenvolvimento
 
-Os cálculos e a formatação monetária ficam em `src/utils/commission.ts`. As alterações da equipe e o salvamento ficam em `src/hooks/use-commission-people.ts`, e a exportação fica em `src/utils/export-summary.ts`.
+Os cálculos e a formatação monetária ficam em `src/utils/commission.ts`. As edições da equipe ficam em `src/hooks/use-commission-people.ts`. As consultas e mutações do Supabase ficam nos hooks `use-auth.ts` e `use-workspace.ts`, com o cache configurado em `src/lib/query-client.ts`. A exportação PNG fica em `src/utils/export-summary.ts`.
 
 Cada componente fica em `src/components/nome-do-componente/`, com a implementação e exportação em `index.tsx` e os estilos em `style.module.css`. As pastas usam letras minúsculas e palavras separadas por hífen (kebab-case). A composição da aplicação segue o mesmo padrão em `src/app/`. Importe o CSS Module no próprio componente e use as classes pelo objeto `styles`. Regras responsivas ficam no mesmo arquivo de estilos do componente; tokens e regras globais ficam em `src/index.css`.
+
+Os formulários de cadastro, login, recuperação e definição de nova senha usam React Hook Form. Os campos da calculadora usam o estado compartilhado em `use-commission-people.ts`, que alimenta os cálculos e o salvamento automático.
 
 Antes de enviar alterações, execute:
 
