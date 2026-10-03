@@ -74,3 +74,355 @@
 .card .success {
   color: var(--green);
 }
+
+.confirmationPage {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background:
+    radial-gradient(ellipse at 90% 20%, #e3efe0 0, transparent 45%), #f5f7f2;
+}
+.confirmationMain {
+  flex: 1;
+  display: grid;
+  align-items: center;
+  padding: 56px 24px;
+}
+.confirmationLayout {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 0.95fr 1.05fr;
+  align-items: stretch;
+  gap: 28px;
+}
+.welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 44px 38px;
+  border-radius: 24px;
+  color: white;
+  background:
+    radial-gradient(circle at 100% 0, #32785c 0, transparent 55%), #174e3a;
+}
+.eyebrow {
+  color: var(--green);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+}
+.welcome .eyebrow {
+  color: #bed9b7;
+}
+.welcome h2 {
+  margin: 22px 0 18px;
+  font:
+    700 clamp(32px, 3.4vw, 44px) / 1.15 'Manrope',
+    sans-serif;
+  letter-spacing: -1.7px;
+}
+.welcome h2 span {
+  color: #cee7a4;
+}
+.welcome > p {
+  margin: 0;
+  color: #d0e1d7;
+  font-size: 15px;
+  line-height: 1.75;
+}
+.welcomeIllustration {
+  margin-top: 36px;
+  padding: 22px;
+  border: 1px solid #ffffff26;
+  border-radius: 16px;
+  background: #ffffff09;
+}
+.chartHeading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.chartHeading > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.chartBadge {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #cee7a4;
+  color: #174e3a;
+}
+.chartBars {
+  height: 100px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+  border-bottom: 1px solid #ffffff30;
+}
+.chartBars span {
+  flex: 1;
+  height: 28%;
+  border-radius: 5px 5px 0 0;
+  background: #93bda0;
+}
+.chartBars span:nth-child(2) {
+  height: 45%;
+}
+.chartBars span:nth-child(3) {
+  height: 36%;
+}
+.chartBars span:nth-child(4) {
+  height: 60%;
+}
+.chartBars span:nth-child(5) {
+  height: 54%;
+}
+.chartBars span:nth-child(6) {
+  height: 78%;
+}
+.chartBars span:nth-child(7) {
+  height: 95%;
+  background: #cee7a4;
+}
+.chartCaption {
+  margin-top: 12px;
+  color: #c5dace;
+  font-size: 11px;
+}
+.welcomeNote {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 28px;
+  color: #c5dace;
+  font-size: 11px;
+  line-height: 1.5;
+}
+.welcomeNote svg {
+  flex-shrink: 0;
+}
+.confirmationCard {
+  padding: 36px 40px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: 0 20px 50px #25392e08;
+}
+.progress {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 36px;
+  color: var(--muted);
+  font-size: 10px;
+}
+.progress > span:not(.progressLine) {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+}
+.progress .completedStep,
+.progress .currentStep {
+  color: var(--green);
+  font-weight: 700;
+}
+.progressLine {
+  flex: 1;
+  min-width: 10px;
+  height: 1px;
+  background: var(--line);
+}
+.mailIcon {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 72px;
+  height: 72px;
+  margin-bottom: 24px;
+  border-radius: 22px;
+  color: var(--green);
+  background: var(--mint);
+}
+.mailIcon span {
+  position: absolute;
+  right: -5px;
+  bottom: -3px;
+  display: grid;
+  place-items: center;
+  width: 25px;
+  height: 25px;
+  border: 3px solid white;
+  border-radius: 50%;
+  color: white;
+  background: var(--green);
+}
+.confirmationCard h1 {
+  margin: 10px 0 12px;
+  font:
+    800 clamp(26px, 3vw, 32px) / 1.2 'Manrope',
+    sans-serif;
+  letter-spacing: -1.2px;
+}
+.confirmationIntro {
+  margin: 0;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.emailAddress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 18px;
+  padding: 13px 15px;
+  border: 1px solid #dfebe3;
+  border-radius: 10px;
+  background: #f5f9f5;
+  color: var(--green-dark);
+  font-size: 13px;
+}
+.emailAddress svg {
+  flex-shrink: 0;
+}
+.emailAddress strong {
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+.nextSteps {
+  display: grid;
+  gap: 18px;
+  margin: 26px 0;
+  padding: 0;
+  list-style: none;
+}
+.nextSteps li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.nextSteps li > span {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+}
+.nextSteps strong {
+  font-size: 12px;
+}
+.nextSteps p {
+  margin: 4px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+.primaryAction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--green);
+  color: white;
+  font-size: 14px;
+  font-weight: 700;
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease;
+}
+.primaryAction:hover {
+  background: var(--green-dark);
+  box-shadow: 0 4px 12px #196b4b26;
+}
+.editEmail {
+  display: block;
+  width: 100%;
+  padding: 14px 10px;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+}
+.editEmail:hover {
+  color: var(--green);
+}
+.existingAccount {
+  margin-top: 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.existingAccount button {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--green);
+  font-size: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.confirmationFooter {
+  padding: 0 24px 24px;
+  color: var(--muted);
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.7;
+}
+.confirmationFooter span {
+  margin: 0 8px;
+}
+@media (max-width: 760px) {
+  .confirmationMain {
+    padding: 32px 16px;
+  }
+  .confirmationLayout {
+    max-width: 480px;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .welcome {
+    padding: 28px;
+  }
+  .welcome h2 {
+    max-width: 340px;
+    margin: 16px 0 12px;
+    font-size: 32px;
+  }
+  .welcome > p {
+    font-size: 13px;
+  }
+  .welcomeIllustration,
+  .welcomeNote {
+    display: none;
+  }
+  .confirmationCard {
+    padding: 28px 24px;
+  }
+  .progress {
+    gap: 6px;
+    margin-bottom: 28px;
+    font-size: 9px;
+  }
+}
