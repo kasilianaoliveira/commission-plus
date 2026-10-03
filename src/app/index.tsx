@@ -1,11 +1,11 @@
-import './App.css'
-import { AppFooter } from './components/AppFooter'
-import { AppHeader } from './components/AppHeader'
-import { CommissionSection } from './components/CommissionSection'
-import { Hero } from './components/Hero'
-import { SummaryCards } from './components/SummaryCards'
-import { useCommissionPeople } from './hooks/useCommissionPeople'
-import { exportSummary } from './utils/exportSummary'
+import styles from './style.module.css'
+import { AppFooter } from '../components/app-footer'
+import { AppHeader } from '../components/app-header'
+import { CommissionSection } from '../components/commission-section'
+import { Hero } from '../components/hero'
+import { SummaryCards } from '../components/summary-cards'
+import { useCommissionPeople } from '../hooks/useCommissionPeople'
+import { exportSummary } from '../utils/exportSummary'
 
 function App() {
   const {
@@ -20,10 +20,10 @@ function App() {
   } = useCommissionPeople()
 
   return (
-    <div className="app-shell">
+    <div className={styles['app-shell']}>
       <AppHeader />
 
-      <main id="top">
+      <main id="top" className={styles.main}>
         <Hero />
         <SummaryCards
           summary={summary}

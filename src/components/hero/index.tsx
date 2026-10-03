@@ -1,9 +1,10 @@
+import styles from './style.module.css'
 import { Calculator } from 'lucide-react'
 
 export function Hero() {
   return (
-    <section className="hero-copy">
-      <div className="eyebrow">
+    <section className={styles['hero-copy']}>
+      <div className={styles['eyebrow']}>
         <Calculator size={15} /> Cálculo diário
       </div>
       <h1>

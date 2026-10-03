@@ -1,6 +1,7 @@
+import styles from './style.module.css'
 import { Plus, Users } from 'lucide-react'
-import type { Person, PersonField } from '../types/commission'
-import { PersonCard } from './PersonCard'
+import type { Person, PersonField } from '../../types/commission'
+import { PersonCard } from '../person-card'
 
 type CommissionSectionProps = {
   people: Person[]
@@ -22,19 +23,19 @@ export function CommissionSection({
   onRemoveSale,
 }: CommissionSectionProps) {
   return (
-    <section className="commissions-section">
-      <div className="section-heading">
+    <section className={styles['commissions-section']}>
+      <div className={styles['section-heading']}>
         <div>
-          <span className="section-kicker">Equipe</span>
+          <span className={styles['section-kicker']}>Equipe</span>
           <h2>Comissões individuais</h2>
           <p>Edite os campos abaixo para recalcular automaticamente.</p>
         </div>
-        <button className="add-button" type="button" onClick={onAddPerson}>
+        <button className={styles['add-button']} type="button" onClick={onAddPerson}>
           <Plus size={18} strokeWidth={2.5} /> Adicionar pessoa
         </button>
       </div>
 
-      <div className="people-list">
+      <div className={styles['people-list']}>
         {people.map((person, index) => (
           <PersonCard
             key={person.id}
@@ -49,11 +50,11 @@ export function CommissionSection({
         ))}
 
         {people.length === 0 && (
-          <div className="empty-state">
+          <div className={styles['empty-state']}>
             <Users size={28} />
             <h3>Nenhuma pessoa adicionada</h3>
             <p>Adicione alguém para começar a calcular.</p>
-            <button className="add-button" type="button" onClick={onAddPerson}>
+            <button className={styles['add-button']} type="button" onClick={onAddPerson}>
               <Plus size={18} /> Adicionar pessoa
             </button>
           </div>

@@ -20,6 +20,8 @@ O Comissão+ é uma aplicação para calcular comissões a partir das vendas de 
 
 Tudo funciona no navegador, com salvamento local automático e exportação do resumo em PNG para compartilhar.
 
+O escopo da próxima versão — login de gerentes, equipes próprias, histórico diário, relatórios em PDF e backup/importação em JSON — está documentado em [Evolução do produto](docs/evolucao-do-produto.md). Essas funcionalidades ainda não estão implementadas.
+
 ## Funcionalidades
 
 - **Gestão da equipe:** adicione e remova pessoas, edite nomes e configure as regras individuais.
@@ -107,7 +109,7 @@ O resumo apresenta os valores atuais da tela; os registros não são separados a
 | TypeScript | Tipagem dos dados e do código. |
 | Vite 8 | Desenvolvimento e build. |
 | Lucide React | Ícones da interface. |
-| CSS | Estilização da aplicação. |
+| CSS Modules | Estilos isolados por componente. |
 | Canvas API | Geração do resumo em PNG. |
 | localStorage | Persistência local. |
 | ESLint | Verificação do código. |
@@ -118,7 +120,14 @@ O resumo apresenta os valores atuais da tela; os registros não são separados a
 public/                   # Ícones públicos
 src/
 ├── assets/               # Recursos visuais
-├── components/           # Cabeçalho, cartões, campos e resumo
+├── app/                  # Composição da tela: index.tsx e style.module.css
+├── components/           # Uma pasta por componente, com index.tsx e style.module.css
+│   ├── app-header/
+│   ├── app-footer/
+│   ├── hero/
+│   ├── summary-cards/
+│   ├── commission-section/
+│   └── person-card/
 ├── hooks/
 │   └── useCommissionPeople.ts  # Estado, edição e persistência da equipe
 ├── types/
@@ -126,15 +135,15 @@ src/
 ├── utils/
 │   ├── commission.ts     # Cálculos, formatação e leitura dos dados salvos
 │   └── exportSummary.ts  # Geração e download do PNG
-├── App.tsx               # Composição da tela
-├── App.css               # Estilos da aplicação
-├── index.css             # Estilos globais
+├── index.css             # Tokens, estilos básicos e acessibilidade globais
 └── main.tsx              # Entrada da aplicação
 ```
 
 ## Desenvolvimento
 
 Os cálculos e a formatação monetária ficam em `src/utils/commission.ts`. As alterações da equipe e o salvamento ficam em `src/hooks/useCommissionPeople.ts`, e a exportação fica em `src/utils/exportSummary.ts`.
+
+Cada componente fica em `src/components/nome-do-componente/`, com a implementação e exportação em `index.tsx` e os estilos em `style.module.css`. As pastas usam letras minúsculas e palavras separadas por hífen (kebab-case). A composição da aplicação segue o mesmo padrão em `src/app/`. Importe o CSS Module no próprio componente e use as classes pelo objeto `styles`. Regras responsivas ficam no mesmo arquivo de estilos do componente; tokens e regras globais ficam em `src/index.css`.
 
 Antes de enviar alterações, execute:
 

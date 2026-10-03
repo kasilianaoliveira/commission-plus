@@ -1,7 +1,8 @@
+import styles from './style.module.css'
 import { useState } from 'react'
 import { Download, ReceiptText, Users, WalletCards } from 'lucide-react'
-import type { CommissionSummary } from '../types/commission'
-import { currency } from '../utils/commission'
+import type { CommissionSummary } from '../../types/commission'
+import { currency } from '../../utils/commission'
 
 type SummaryCardsProps = {
   summary: CommissionSummary
@@ -27,20 +28,20 @@ export function SummaryCards({ summary, peopleCount, onExport }: SummaryCardsPro
 
   return (
     <section aria-label="Resumo do dia">
-      <div className="summary-heading">
+      <div className={styles['summary-heading']}>
         <div>
           <h2>Resumo do dia</h2>
           <p>Exporte os valores atuais para compartilhar com o dono.</p>
         </div>
-        <button className="export-button" type="button" onClick={handleExport} disabled={exporting}>
+        <button className={styles['export-button']} type="button" onClick={handleExport} disabled={exporting}>
           <Download size={18} aria-hidden="true" />
-          {exporting ? 'Gerando imagem…' : 'Exportar imagem'} <span className="export-format">PNG</span>
+          {exporting ? 'Gerando imagem…' : 'Exportar imagem'} <span className={styles['export-format']}>PNG</span>
         </button>
       </div>
       {exportError && <p role="alert">{exportError}</p>}
-      <div className="summary-grid">
-      <article className="summary-card summary-card--primary">
-        <span className="summary-icon">
+      <div className={styles['summary-grid']}>
+      <article className={[styles['summary-card'], styles['summary-card--primary']].join(' ')}>
+        <span className={styles['summary-icon']}>
           <ReceiptText size={21} />
         </span>
         <div>
@@ -49,8 +50,8 @@ export function SummaryCards({ summary, peopleCount, onExport }: SummaryCardsPro
         </div>
       </article>
 
-      <article className="summary-card">
-        <span className="summary-icon">
+      <article className={styles['summary-card']}>
+        <span className={styles['summary-icon']}>
           <WalletCards size={21} />
         </span>
         <div>
@@ -59,8 +60,8 @@ export function SummaryCards({ summary, peopleCount, onExport }: SummaryCardsPro
         </div>
       </article>
 
-      <article className="summary-card">
-        <span className="summary-icon">
+      <article className={styles['summary-card']}>
+        <span className={styles['summary-icon']}>
           <Users size={21} />
         </span>
         <div>

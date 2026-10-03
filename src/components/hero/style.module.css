@@ -1,0 +1,32 @@
+.hero-copy { padding: 80px 0 42px; }
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: var(--green);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+}
+
+.hero-copy h1 {
+  max-width: 760px;
+  margin: 18px 0 18px;
+  color: var(--ink);
+  font-family: 'Manrope', sans-serif;
+  font-size: clamp(42px, 6vw, 70px);
+  font-weight: 700;
+  line-height: 1.04;
+  letter-spacing: -4px;
+}
+
+.hero-copy h1 em { color: var(--green); font-style: normal; }
+
+.hero-copy > p { max-width: 590px; color: var(--muted); font-size: 17px; line-height: 1.65; }
+
+@media (max-width: 760px) {
+  .hero-copy { padding: 54px 0 34px; }
+  .hero-copy h1 { letter-spacing: -2.5px; }
+}

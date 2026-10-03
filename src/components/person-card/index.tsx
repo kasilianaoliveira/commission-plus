@@ -1,3 +1,4 @@
+import styles from './style.module.css'
 import { useState } from 'react'
 import {
   CircleDollarSign,
@@ -6,13 +7,13 @@ import {
   Trash2,
   X,
 } from 'lucide-react'
-import type { Person, PersonField } from '../types/commission'
+import type { Person, PersonField } from '../../types/commission'
 import {
   calculateCommission,
   currency,
   formatSaleAmount,
   getSalesTotal,
-} from '../utils/commission'
+} from '../../utils/commission'
 
 type PersonCardProps = {
   person: Person
@@ -37,14 +38,14 @@ export function PersonCard({
   const commission = calculateCommission(person)
 
   return (
-    <article className="person-card">
-      <div className="person-number" aria-hidden="true">
+    <article className={styles['person-card']}>
+      <div className={styles['person-number']} aria-hidden="true">
         {String(index + 1).padStart(2, '0')}
       </div>
 
-      <div className="person-content">
-        <div className="person-header">
-          <label className="name-field">
+      <div className={styles['person-content']}>
+        <div className={styles['person-header']}>
+          <label className={styles['name-field']}>
             <span className="sr-only">Nome da pessoa</span>
             <input
               value={person.name}
@@ -55,7 +56,7 @@ export function PersonCard({
             />
           </label>
           <button
-            className="delete-button"
+            className={styles['delete-button']}
             type="button"
             onClick={() => onRemovePerson(person.id)}
             aria-label={`Remover ${person.name || `pessoa ${index + 1}`}`}
@@ -64,10 +65,10 @@ export function PersonCard({
           </button>
         </div>
 
-        <div className="fields-grid">
-          <label className="field">
+        <div className={styles['fields-grid']}>
+          <label className={styles['field']}>
             <span>Percentual</span>
-            <div className="input-wrap input-wrap--suffix">
+            <div className={[styles['input-wrap'], styles['input-wrap--suffix']].join(' ')}>
               <input
                 type="number"
                 min="0"
@@ -81,9 +82,9 @@ export function PersonCard({
             </div>
           </label>
 
-          <label className="field">
+          <label className={styles['field']}>
             <span>Valor fixo</span>
-            <div className="input-wrap input-wrap--prefix">
+            <div className={[styles['input-wrap'], styles['input-wrap--prefix']].join(' ')}>
               <span>R$</span>
               <input
                 type="number"
@@ -98,28 +99,28 @@ export function PersonCard({
           </label>
         </div>
 
-        <div className="sales-box">
-          <div className="sales-heading">
+        <div className={styles['sales-box']}>
+          <div className={styles['sales-heading']}>
             <div>
               <span>
                 <ShoppingBag size={15} /> Vendas do dia
               </span>
               <small>Adicione cada venda separadamente</small>
             </div>
-            <div className="sales-total">
+            <div className={styles['sales-total']}>
               <small>Total vendido</small>
               <strong>{currency.format(getSalesTotal(person))}</strong>
             </div>
           </div>
 
-          <div className="sales-list">
-            <div className="sales-entries">
+          <div className={styles['sales-list']}>
+            <div className={styles['sales-entries']}>
               {person.sales.map((sale, saleIndex) => (
-                <div className="sale-row" key={sale.id}>
+                <div className={styles['sale-row']} key={sale.id}>
                   <label htmlFor={`sale-${sale.id}`}>
                     Venda {String(saleIndex + 1).padStart(2, '0')}
                   </label>
-                  <div className="input-wrap input-wrap--prefix">
+                  <div className={[styles['input-wrap'], styles['input-wrap--prefix']].join(' ')}>
                     <span>R$</span>
                     <input
                       id={`sale-${sale.id}`}
@@ -148,7 +149,7 @@ export function PersonCard({
                     />
                   </div>
                   <button
-                    className="remove-sale-button"
+                    className={styles['remove-sale-button']}
                     type="button"
                     onClick={() => onRemoveSale(person.id, sale.id)}
                     aria-label={`Remover venda ${saleIndex + 1} de ${person.name}`}
@@ -160,7 +161,7 @@ export function PersonCard({
             </div>
 
             <button
-              className="add-sale-button"
+              className={styles['add-sale-button']}
               type="button"
               onClick={() => onAddSale(person.id)}
             >
@@ -169,8 +170,8 @@ export function PersonCard({
           </div>
         </div>
 
-        <div className="calculation-row">
-          <div className="calculation-formula">
+        <div className={styles['calculation-row']}>
+          <div className={styles['calculation-formula']}>
             <span>
               {currency.format(commission.percentageAmount)}{' '}
               <small>percentual</small>
@@ -180,7 +181,7 @@ export function PersonCard({
               {currency.format(person.fixedAmount)} <small>fixo</small>
             </span>
           </div>
-          <div className="commission-total">
+          <div className={styles['commission-total']}>
             <span>
               <CircleDollarSign size={16} /> Comissão total
             </span>

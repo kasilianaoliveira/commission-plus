@@ -33,3 +33,11 @@ button { cursor: pointer; }
   white-space: nowrap;
   border: 0;
 }
+
+#root { min-height: 100vh; }
+
+button:focus-visible, input:focus-visible { outline: 3px solid rgba(25,107,75,.22); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) {
+*, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+}

@@ -1,10 +1,11 @@
+import styles from './style.module.css'
 import { TrendingUp } from 'lucide-react'
 
 export function AppFooter() {
   return (
-    <footer>
-      <span className="brand brand--small">
-        <span className="brand-mark">
+    <footer className={styles.footer}>
+      <span className={[styles['brand'], styles['brand--small']].join(' ')}>
+        <span className={styles['brand-mark']}>
           <TrendingUp size={16} />
         </span>
         Comissão<span>+</span>
