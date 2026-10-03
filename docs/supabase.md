@@ -3,17 +3,17 @@
 ## O que faz cada parte
 
 - **Supabase Auth** cria e autentica contas de gerentes por e-mail e senha. A recuperação de senha também passa por ele.
-- **PostgreSQL** guarda o estado atual da equipe em `public.manager_workspaces`. Cada linha pertence a um gerente.
+- **PostgreSQL** guarda o cadastro da equipe em `public.manager_teams` e os registros diários em `public.manager_days`. Cada linha pertence a um gerente.
 - **RLS** limita a leitura e a criação da linha ao gerente autenticado. A gravação passa por uma função SQL que confere o dono e a versão dos dados.
 - **TanStack React Query** gerencia a consulta da sessão, o carregamento da área, o cache e as mutações de salvamento. Os efeitos restantes escutam eventos externos: mudança de autenticação, intervalo do salvamento automático e saída da página.
 - **Chave pública** identifica o projeto no navegador. Ela pode estar no frontend; a proteção dos dados vem da autenticação e das regras do banco. Nunca coloque a chave `service_role` ou uma chave secreta em `VITE_*`.
 
-Nesta etapa, o banco salva o estado atual da calculadora: pessoas, percentuais, valor fixo e vendas exibidas. A migração para registros com datas, equipes adicionais e relatórios ainda será implementada. A coluna JSON permite conectar a interface atual sem atribuir datas inventadas a vendas anteriores.
+O histórico salva um snapshot por gerente e data: nomes, percentuais, fixos do dia e vendas. O cadastro independente da equipe guarda nomes, percentuais e fixos, sem vendas ou datas. Equipes adicionais e regras de fixo com vigência ficam para as próximas etapas.
 
 ## Configuração
 
 1. Crie um projeto no [painel do Supabase](https://supabase.com/dashboard).
-2. No SQL Editor do projeto, execute o conteúdo de [`supabase/migrations/202610030001_initial.sql`](../supabase/migrations/202610030001_initial.sql). Se usar Supabase CLI, aplique a migração por ela.
+2. No SQL Editor do projeto, execute o conteúdo de [`supabase/migrations/202610030001_initial.sql`](../supabase/migrations/202610030001_initial.sql). Depois, execute [`supabase/migrations/202610030002_daily_history.sql`](../supabase/migrations/202610030002_daily_history.sql). Em seguida, execute [`supabase/migrations/202610030003_team_registry.sql`](../supabase/migrations/202610030003_team_registry.sql). Execute apenas as migrações ainda não aplicadas, mantendo a ordem. Se usar Supabase CLI, aplique as migrações por ela.
 3. Copie `.env.example` para `.env.local` e preencha `VITE_SUPABASE_URL` e `VITE_SUPABASE_PUBLISHABLE_KEY` com os valores do projeto. A URL e a chave pública ficam na área de conexão/API do projeto.
 4. Em Authentication → Providers, habilite e-mail e senha. Em Authentication → URL Configuration, defina **Site URL** como o endereço publicado do aplicativo (ou o endereço local durante o desenvolvimento). Em **Redirect URLs**, adicione os endereços usados para abrir o aplicativo, incluindo a porta, por exemplo `http://localhost:5173`, e o endereço publicado. O cadastro e a recuperação de senha enviam o endereço atual do aplicativo como destino; ele precisa estar autorizado nessa lista.
 5. Execute `pnpm install` e `pnpm dev`. Reinicie o servidor após mudar `.env.local`.
@@ -34,18 +34,19 @@ Links de e-mails já enviados mantêm o destino antigo. Depois de ajustar a conf
 
 ## Comportamento atual
 
-O gerente cria uma conta, confirma o e-mail quando essa opção estiver ativa e entra. Na primeira entrada é criada uma área vazia no banco. Mudanças na calculadora são enviadas automaticamente após uma pausa curta; a tela mostra se os dados foram salvos. O botão **Sair** fica indisponível enquanto houver alterações pendentes.
+O gerente cria uma conta, confirma o e-mail quando necessário e entra. A tela abre a data atual em America/Sao_Paulo. Escolher outra data carrega seu registro independente. Abrir uma data vazia não grava nada nem gera valor fixo.
 
-Se havia dados no `localStorage` da versão anterior, a tela oferece **Importar pessoas e vendas atuais** quando a área da conta está vazia. A importação exige um clique e não apaga os dados locais. Os registros importados continuam sem data; o histórico diário precisa de uma migração própria.
+Na aba **Equipe**, cadastre os membros com nome, percentual e valor fixo, todos editáveis. O cadastro é salvo independentemente da data. Na aba **Comissões**, **Iniciar dia com a equipe** copia os membros e as regras do cadastro atual, sem vendas. Esse clique aplica o fixo do dia às pessoas incluídas, mesmo sem vendas. Nessa aba, os dados do membro são exibidos como referência e apenas as vendas são editáveis. Alterações ou remoções no cadastro da equipe não recalculam dias já iniciados.
 
-Duas abas da mesma conta podem editar a mesma área. Cada gravação compara a versão lida com a versão no banco. Se outra aba salvou primeiro, a gravação é recusada e a tela mantém as alterações locais para conferência; o gerente não deve recarregar sem copiá-las ou tentar uma recuperação manual.
+O salvamento automático mostra pendências, sucesso e falhas. A troca de data e a saída ficam bloqueadas enquanto houver alterações pendentes. Duas abas usam comparação de versão por dia: uma gravação com versão antiga é recusada sem sobrescrever a outra. Em conflito, copie as alterações antes de recarregar. Tentar novamente serve para falhas transitórias; não resolve uma versão desatualizada.
+
+O PNG mostra a data selecionada e os valores atuais da tela. Valores monetários aceitam até duas casas decimais e são persistidos em centavos.
 
 ## Limitações desta etapa
 
-- O esquema atual admite uma área por gerente. Equipes adicionais e importação de backup JSON exigirão uma migração posterior.
-- Ainda não há histórico diário, periodicidade editável do valor fixo, relatórios PDF ou backup JSON.
-- A exportação disponível continua sendo o resumo atual em PNG.
-- Não foi possível validar login e RLS contra um projeto real sem as credenciais públicas e a aplicação da migração no projeto do usuário. Build e lint locais verificam o código, mas não substituem esse teste.
+- Ainda não há equipes adicionais, fixo semanal/mensal, consultas agregadas por período, PDF ou backup JSON.
+- O esquema usa snapshots por data; a evolução para entidades e regras com vigência será feita antes dos fixos periódicos.
+- A migração precisa ser aplicada no projeto Supabase. Testes locais com mocks, build e lint não validam a migração ou o RLS em um banco real.
 
 ## Checklist de validação no projeto conectado
 
@@ -55,3 +56,14 @@ Duas abas da mesma conta podem editar a mesma área. Cada gravação compara a v
 4. Tentar consultar e criar uma linha de outra conta diretamente pela API: a leitura não deve revelar dados e a criação deve falhar.
 5. Editar a mesma conta em duas abas; a segunda gravação com versão antiga deve falhar sem sobrescrever a primeira.
 6. Testar cadastro com confirmação e recuperação de senha usando as URLs configuradas.
+
+## Validação do histórico diário
+
+1. Aplique as migrações `202610030002_daily_history.sql` e `202610030003_team_registry.sql` após a inicial.
+2. Cadastre os membros na aba Equipe e aguarde o salvamento. Recarregue e verifique que o cadastro foi preservado sem criar nenhum dia. Na aba Comissões, escolha uma data, inicie com a equipe e adicione vendas. Confira os totais e a persistência.
+3. Abra o dia seguinte: deve começar sem registros e com totais zero. Inicie com a equipe e confirme que as vendas não foram copiadas.
+4. Faça vendas, aguarde **Salvo na nuvem** e navegue entre os dois dias. O nome, percentual e fixo de cada dia devem permanecer independentes.
+5. Edite nome, percentual e fixo ou remova um membro na aba Equipe. Confira que os dias registrados permanecem intactos e um novo dia usa o cadastro atualizado. Exporte o PNG e confira a data selecionada.
+6. Faça alterações e tente mudar a data imediatamente: os controles devem aguardar o salvamento. Simule falha de rede e confira que o rascunho é mantido.
+7. Abra a mesma data em duas abas. Após a primeira salvar, a segunda deve receber conflito. Datas diferentes podem ser salvas independentemente.
+8. Com duas contas, confirme isolamento por interface e API: leituras de `manager_days` e `manager_teams` da outra conta devem ser vazias; escritas diretas devem falhar. A função `save_manager_day` sempre usa o usuário autenticado como proprietário.

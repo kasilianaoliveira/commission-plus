@@ -1,43 +1,6 @@
-import type { Person, Sale, StoredPerson } from '../types/commission'
-
-export const STORAGE_KEY = 'commission-plus:people:v4'
-export const LEGACY_STORAGE_KEYS = [
-  'commission-plus:people:v3',
-  'commission-plus:people:v2',
-]
+import type { Person, Sale } from '../types/commission'
 
 const preferredOrder = ['lucas', 'luciano', 'adriele', 'ana']
-
-export const initialPeople: Person[] = [
-  {
-    id: 'lucas',
-    name: 'Lucas',
-    percentage: 20,
-    fixedAmount: 53.33,
-    sales: [{ id: 'lucas-sale-1', amount: 0 }],
-  },
-  {
-    id: 'luciano',
-    name: 'Luciano',
-    percentage: 10,
-    fixedAmount: 33.33,
-    sales: [{ id: 'luciano-sale-1', amount: 0 }],
-  },
-  {
-    id: 'adriele',
-    name: 'Adriele',
-    percentage: 10,
-    fixedAmount: 33.33,
-    sales: [{ id: 'adriele-sale-1', amount: 0 }],
-  },
-  {
-    id: 'ana',
-    name: 'Ana',
-    percentage: 10,
-    fixedAmount: 33.33,
-    sales: [{ id: 'ana-sale-1', amount: 0 }],
-  },
-]
 
 export const currency = new Intl.NumberFormat('pt-BR', {
   style: 'currency',
@@ -77,7 +40,7 @@ export const createId = () =>
     ? crypto.randomUUID()
     : `${Date.now()}-${Math.random()}`
 
-export const sortPeople = (people: Person[]) =>
+export const sortPeople = <T extends { name: string }>(people: T[]) =>
   [...people].sort((firstPerson, secondPerson) => {
     const firstPosition = preferredOrder.indexOf(firstPerson.name.toLowerCase())
     const secondPosition = preferredOrder.indexOf(
@@ -89,31 +52,3 @@ export const sortPeople = (people: Person[]) =>
       (secondPosition === -1 ? preferredOrder.length : secondPosition)
     )
   })
-
-export const parseStoredPeople = (storedValue: string): Person[] => {
-  const parsed = JSON.parse(storedValue) as StoredPerson[]
-
-  if (!Array.isArray(parsed)) return initialPeople
-
-  const people = parsed.map((person, personIndex): Person => {
-    const sales = Array.isArray(person.sales)
-      ? person.sales.map((sale): Sale => ({
-          id: sale.id || createId(),
-          amount: sale.amount === '' ? '' : Number(sale.amount) || 0,
-        }))
-      : [{ id: createId(), amount: Number(person.salesAmount) || 0 }]
-
-    return {
-      id: person.id || createId(),
-      name:
-        typeof person.name === 'string'
-          ? person.name
-          : `Pessoa ${personIndex + 1}`,
-      percentage: Number(person.percentage) || 0,
-      fixedAmount: Number(person.fixedAmount) || 0,
-      sales: sales.length > 0 ? sales : [{ id: createId(), amount: 0 }],
-    }
-  })
-
-  return sortPeople(people)
-}

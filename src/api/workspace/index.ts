@@ -1,97 +1,103 @@
 import { useEffect } from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../../lib/supabase'
 import type { Workspace } from '../../types/workspace'
 import type { Person } from '../../types/commission'
-import { parseStoredPeople, sortPeople } from '../../utils/commission'
-
-const workspaceKey = (ownerId: string) => ['workspace', ownerId] as const
-
-async function loadWorkspace(
-  ownerId: string,
-  signal: AbortSignal,
-): Promise<Workspace> {
-  if (!supabase) throw new Error('Configure o Supabase.')
-  const { data: loaded, error } = await supabase
-    .from('manager_workspaces')
-    .select('people, version')
-    .eq('owner_id', ownerId)
-    .abortSignal(signal)
-    .maybeSingle()
-  if (error) throw error
-  let data = loaded
-  if (!data) {
-    const created = await supabase
-      .from('manager_workspaces')
-      .insert({ owner_id: ownerId })
-      .select('people, version')
-      .abortSignal(signal)
-      .single()
-    if (created.error) {
-      // Another session may have created the workspace at the same time.
-      const retry = await supabase
-        .from('manager_workspaces')
-        .select('people, version')
-        .eq('owner_id', ownerId)
-        .abortSignal(signal)
-        .single()
-      if (retry.error) throw created.error
-      data = retry.data
-    } else data = created.data
-  }
-  if (!Array.isArray(data.people) || !Number.isSafeInteger(data.version)) {
-    throw new Error('Os dados salvos têm um formato inesperado.')
-  }
-  return {
-    people: parseStoredPeople(JSON.stringify(data.people)),
-    version: data.version,
-  }
-}
-
-export function useWorkspace(ownerId: string) {
-  return useQuery({
-    queryKey: workspaceKey(ownerId),
-    queryFn: ({ signal }) => loadWorkspace(ownerId, signal),
-    // The editor owns its draft. Background reads must not replace its saved version.
-    staleTime: Infinity,
-    gcTime: 0,
-    retry: false,
-  })
-}
+import type { TeamMemberDraft } from '../../types/team-member'
+import { sortPeople } from '../../utils/commission'
+import { dayKey, historyKey } from '../history'
+import { normalizeDailyPeople } from '../../utils/history'
+import { teamKey } from '../team'
 
 export function useWorkspaceAutosave(
   ownerId: string,
   workspace: Workspace,
-  people: Person[],
+  people: (Person | TeamMemberDraft)[],
+  workDate?: string,
+  autosave = true,
 ) {
   const queryClient = useQueryClient()
   const { mutate, reset, isPending, isError, error } = useMutation({
-    mutationKey: ['save-workspace', ownerId],
+    mutationKey: ['save-workspace', ownerId, workDate],
     retry: false,
     mutationFn: async (snapshot: string): Promise<Workspace> => {
       if (!supabase) throw new Error('Configure o Supabase.')
-      const nextPeople: Person[] = JSON.parse(snapshot)
-      const { data, error } = await supabase.rpc('save_manager_workspace', {
-        expected_version: workspace.version,
-        next_people: nextPeople,
-      })
+      const draft: Person[] = JSON.parse(snapshot)
+      const nextPeople = normalizeDailyPeople(draft)
+      const members = nextPeople.map(
+        ({ id, name, percentage, fixedAmount }) => ({
+          id,
+          name,
+          percentage,
+          fixedAmount,
+        }),
+      )
+      if (!workDate && members.some((member) => !member.name.trim())) {
+        throw new Error('Informe o nome de todos os membros da equipe.')
+      }
+      const { data, error } = await supabase.rpc(
+        workDate ? 'save_manager_day' : 'save_manager_team',
+        {
+          expected_version: workspace.version,
+          ...(workDate
+            ? { next_people: nextPeople, selected_date: workDate }
+            : { next_members: members }),
+        },
+      )
       if (error) throw error
       if (!Number.isSafeInteger(data))
         throw new Error('Resposta inesperada ao salvar.')
       return { people: nextPeople, version: data as number }
     },
-    onSuccess: (saved) =>
-      queryClient.setQueryData(workspaceKey(ownerId), saved),
+    onSuccess: (saved, savedSnapshot) => {
+      // Keep the editable string draft in cache; the database stores numeric cents.
+      const cached = { ...saved, people: JSON.parse(savedSnapshot) as Person[] }
+      queryClient.setQueryData(
+        workDate ? dayKey(ownerId, workDate) : teamKey(ownerId),
+        cached,
+      )
+      if (workDate)
+        void queryClient.invalidateQueries({ queryKey: historyKey(ownerId) })
+    },
   })
-  const snapshot = JSON.stringify(people)
+  const numericValue = (value: number | string) =>
+    value === '' || value === '.' || value === ','
+      ? ''
+      : Number(String(value).replace(',', '.'))
+  const snapshot = JSON.stringify(
+    workDate
+      ? people
+      : people.map((person) => ({
+          ...person,
+          percentage: numericValue(person.percentage),
+          fixedAmount: numericValue(person.fixedAmount),
+        })),
+  )
   const hasChanges = snapshot !== JSON.stringify(sortPeople(workspace.people))
   const hasUnsavedChanges = hasChanges || isPending
+  const incompleteTeam =
+    !workDate &&
+    people.some(
+      (person) =>
+        !person.name.trim() ||
+        numericValue(person.percentage) === '' ||
+        numericValue(person.fixedAmount) === '',
+    )
 
   useEffect(() => {
-    if (!hasChanges || isPending || isError) return
+    if (!autosave || !hasChanges || isPending || isError || incompleteTeam)
+      return
     const timer = window.setTimeout(() => mutate(snapshot), 700)
     return () => window.clearTimeout(timer)
-  }, [hasChanges, snapshot, isPending, isError, mutate])
+  }, [
+    autosave,
+    hasChanges,
+    snapshot,
+    isPending,
+    isError,
+    incompleteTeam,
+    mutate,
+  ])
 
   useEffect(() => {
     if (!hasUnsavedChanges) return
@@ -102,15 +108,23 @@ export function useWorkspaceAutosave(
   }, [hasUnsavedChanges])
 
   return {
-    status: isError
-      ? 'Falha ao salvar'
-      : isPending
-        ? 'Salvando…'
-        : hasChanges
-          ? 'Alterações pendentes'
-          : 'Salvo na nuvem',
+    status: incompleteTeam
+      ? 'Preencha nome, percentual e valor fixo para salvar'
+      : isError
+        ? 'Falha ao salvar'
+        : isPending
+          ? 'Salvando…'
+          : hasChanges
+            ? 'Alterações pendentes'
+            : 'Salvo na nuvem',
     error,
     hasUnsavedChanges,
-    retry: reset,
+    isPending,
+    canSave: hasChanges && !isPending && !incompleteTeam,
+    save: () => {
+      if (hasChanges && !isPending && !incompleteTeam) mutate(snapshot)
+    },
+    reset,
+    retry: autosave ? reset : () => mutate(snapshot),
   }
 }

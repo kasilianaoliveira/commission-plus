@@ -8,46 +8,10 @@ import {
   calculateCommission,
   createId,
   getSalesTotal,
-  initialPeople,
-  LEGACY_STORAGE_KEYS,
-  parseStoredPeople,
   sortPeople,
-  STORAGE_KEY,
 } from '../utils/commission'
 
-export const loadLocalPeople = () => {
-  try {
-    const storedPeople = localStorage.getItem(STORAGE_KEY)
-    if (storedPeople) return parseStoredPeople(storedPeople)
-
-    const legacyPeople = LEGACY_STORAGE_KEYS.map((key) =>
-      localStorage.getItem(key),
-    ).find((value) => value !== null)
-    if (!legacyPeople) return null
-
-    const migratedPeople = parseStoredPeople(legacyPeople)
-    const hasAna = migratedPeople.some(
-      (person) => person.name.trim().toLowerCase() === 'ana',
-    )
-
-    return hasAna
-      ? migratedPeople
-      : [
-          ...migratedPeople,
-          {
-            id: 'ana',
-            name: 'Ana',
-            percentage: 10,
-            fixedAmount: 33.33,
-            sales: [],
-          },
-        ]
-  } catch {
-    return null
-  }
-}
-
-export function useCommissionPeople(initial: Person[] = initialPeople) {
+export function useCommissionPeople(initial: Person[] = []) {
   const [people, setPeople] = useState<Person[]>(initial)
 
   const orderedPeople = useMemo(() => sortPeople(people), [people])
@@ -66,30 +30,22 @@ export function useCommissionPeople(initial: Person[] = initialPeople) {
   )
 
   const updatePerson = (id: string, field: PersonField, value: string) => {
+    if (field !== 'name' && !Number.isFinite(Number(value))) return
     setPeople((currentPeople) =>
       currentPeople.map((person) =>
         person.id === id
           ? {
               ...person,
               [field]:
-                field === 'name' ? value : Math.max(0, Number(value) || 0),
+                field === 'name'
+                  ? value
+                  : field === 'fixedAmount'
+                    ? Math.round(Math.max(0, Number(value) || 0) * 100) / 100
+                    : Math.max(0, Number(value) || 0),
             }
           : person,
       ),
     )
-  }
-
-  const addPerson = () => {
-    setPeople((currentPeople) => [
-      ...currentPeople,
-      {
-        id: createId(),
-        name: 'Nova pessoa',
-        percentage: 10,
-        fixedAmount: 0,
-        sales: [{ id: createId(), amount: 0 }],
-      },
-    ])
   }
 
   const removePerson = (id: string) => {
@@ -112,7 +68,7 @@ export function useCommissionPeople(initial: Person[] = initialPeople) {
   }
 
   const updateSale = (personId: string, saleId: string, value: string) => {
-    if (!/^\d*(?:[.,]\d*)?$/.test(value)) return
+    if (!/^\d*(?:[.,]\d{0,2})?$/.test(value)) return
 
     const amount = value.replace(',', '.')
     if (amount !== '' && amount !== '.' && !Number.isFinite(Number(amount)))
@@ -153,7 +109,6 @@ export function useCommissionPeople(initial: Person[] = initialPeople) {
   return {
     people: orderedPeople,
     summary,
-    addPerson,
     removePerson,
     updatePerson,
     addSale,

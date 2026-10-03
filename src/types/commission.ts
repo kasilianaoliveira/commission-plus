@@ -17,5 +17,3 @@ export type CommissionSummary = {
 }
 
 export type PersonField = 'name' | 'percentage' | 'fixedAmount'
-
-export type StoredPerson = Partial<Person> & { salesAmount?: number }

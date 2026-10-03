@@ -1,6 +1,6 @@
 # Evolução do Comissão+
 
-Status: planejamento da evolução. A primeira etapa de Supabase, autenticação e salvamento do estado atual foi implementada no código. Veja [a configuração do Supabase](supabase.md). Histórico diário, relatórios PDF e backup JSON ainda são etapas futuras.
+Status: Supabase, autenticação, cadastro independente da equipe e a primeira etapa do histórico diário estão implementados no código. Veja [a configuração do Supabase](supabase.md). Periodicidade do fixo, consultas agregadas, relatórios PDF, equipes adicionais e backup JSON ainda são etapas futuras.
 
 ## Objetivo
 
@@ -9,11 +9,11 @@ Evoluir a calculadora atual para um sistema com contas de administradores/gerent
 ## Situação atual
 
 - Interface em React, TypeScript e Vite.
-- Pessoas e vendas atuais salvas na conta do gerente quando o Supabase está configurado. Dados antigos do `localStorage` podem ser importados manualmente.
-- Vendas sem data: o estado atual não constitui um histórico diário.
+- Registros por data de trabalho, privados por gerente, com pessoas, vendas, nomes, percentuais e valores fixos preservados por dia.
+- Cada dia é um snapshot independente. Novos dias usam o cadastro independente da aba Equipe, sem copiar vendas. Nome, percentual e fixo são editáveis no cadastro; em Comissões, são preservados por dia e apenas as vendas são editáveis. Múltiplas equipes ainda não estão implementadas.
 - Percentual e valor fixo configurados por pessoa.
 - Exportação do resumo atual em PNG.
-- Login de gerente e persistência remota implementados no código; dependem da configuração de um projeto Supabase e da aplicação da migração SQL.
+- Login de gerente e persistência remota implementados no código; dependem da configuração de um projeto Supabase e da aplicação das migrações SQL.
 
 ## Escopo acordado
 
@@ -94,12 +94,6 @@ Deve existir no máximo um registro diário por pessoa, equipe e data. Valores m
 
 Datas de trabalho devem ser armazenadas como datas de calendário. Instantes de criação e alteração devem ser armazenados separadamente. A definição do fuso deve ser consistente na tela, no banco, no PDF e no JSON.
 
-## Migração dos dados atuais
-
-Os dados locais existentes não possuem datas. Por isso, não é possível reconstruir automaticamente dias, semanas ou meses anteriores.
-
-Oferecer uma prévia para importar o estado atual para a conta autenticada e pedir ao gerente que escolha a data à qual esses lançamentos pertencem. Preservar a cópia local até que a migração remota seja confirmada. Não associar silenciosamente dados do navegador a uma conta nem inventar histórico.
-
 ## Decisões pendentes
 
 | Tema                    | Definição necessária                                                                                                                                                      |
@@ -112,10 +106,18 @@ Oferecer uma prévia para importar o estado atual para a conta autenticada e ped
 
 A periodicidade será escolhida e poderá ser editada pelo gerente. As regras de aplicação em períodos parciais e sem vendas precisam ser definidas antes de implementar os cálculos dos relatórios. As regras atuais somam o fixo mesmo sem vendas, mas não possuem uma unidade de tempo.
 
+## Histórico diário implementado
+
+A migração `202610030002_daily_history.sql` adiciona `manager_days`, com chave única por gerente e data, leitura protegida por RLS e escrita por função SQL que valida a sessão, os valores e a versão. Valores são normalizados em centavos e armazenados como números decimais exatos no JSONB. A aplicação usa `manager_teams` para o cadastro e `manager_days` para o histórico; o fluxo de migração de dados antigos foi removido porque não há usuários externos.
+
+A interface permite escolher qualquer data, navegar entre dias e abrir datas já registradas. Mudanças aguardam o salvamento antes de trocar a data. Dias vazios não geram comissão; iniciar um dia aplica os fixos das pessoas copiadas. Correções de dias anteriores têm indicação visível e alteram apenas aquele dia. O PNG identifica a data selecionada.
+
+A migração `202610030003_team_registry.sql` adiciona o cadastro independente em `manager_teams`, protegido por RLS e gravação com comparação de versão. Alterações no cadastro são usadas em novos dias; os dias iniciados preservam seus snapshots. Remover alguém da equipe não apaga seu histórico. A normalização em entidades e regras com vigência permanece necessária para múltiplas equipes e fixos semanais/mensais. Segunda-feira é a proposta de início da semana; as regras de períodos parciais e sem vendas ainda precisam ser definidas antes dos relatórios.
+
 ## Ordem de implementação
 
 1. Definir as regras pendentes, criar o banco, as permissões e a autenticação.
-2. Implementar equipes e pessoas vinculadas à conta, com migração opcional dos dados locais.
+2. Implementar equipes e pessoas vinculadas à conta.
 3. Implementar histórico diário e preservação das regras aplicadas.
 4. Implementar consultas semanais e mensais e relatórios em PDF.
 5. Implementar backup JSON, prévia e importação para uma nova equipe.

@@ -1,7 +1,8 @@
 import type { Person } from '../types/commission'
 import { calculateCommission, currency, getSalesTotal } from './commission'
+import { formatWorkDate, todayInWorkTimeZone } from './history'
 
-export function createSummaryImage(people: Person[], date: Date) {
+export function createSummaryImage(people: Person[], date: Date | string) {
   const canvas = document.createElement('canvas')
   const ctx = canvas.getContext('2d')
   if (!ctx) throw new Error('Não foi possível criar a imagem.')
@@ -69,7 +70,13 @@ export function createSummaryImage(people: Person[], date: Date) {
   ctx.fillRect(0, 0, width, canvas.height)
   text('Comissão+', 56, 80, 32, '#196b4b', true)
   text('Resumo do dia', 56, 150, 48, '#18211d', true)
-  text(date.toLocaleDateString('pt-BR'), 56, 192, 26, '#68736d')
+  text(
+    formatWorkDate(typeof date === 'string' ? date : todayInWorkTimeZone(date)),
+    56,
+    192,
+    26,
+    '#68736d',
+  )
 
   const totals = people.reduce(
     (sum, person) => ({
@@ -164,14 +171,11 @@ export function createSummaryImage(people: Person[], date: Date) {
   return canvas
 }
 
-export async function exportSummary(people: Person[]) {
-  const date = new Date()
-  const dateStamp = [
-    date.getFullYear(),
-    String(date.getMonth() + 1).padStart(2, '0'),
-    String(date.getDate()).padStart(2, '0'),
-  ].join('-')
-  const canvas = createSummaryImage(people, date)
+export async function exportSummary(
+  people: Person[],
+  dateStamp = todayInWorkTimeZone(),
+) {
+  const canvas = createSummaryImage(people, dateStamp)
   const blob = await new Promise<Blob>((resolve, reject) => {
     canvas.toBlob((result) => {
       if (result) resolve(result)

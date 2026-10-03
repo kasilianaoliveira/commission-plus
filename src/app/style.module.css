@@ -20,8 +20,7 @@
   }
 }
 
-.accountBar,
-.importBar {
+.accountBar {
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -33,7 +32,6 @@
   font-size: 13px;
 }
 .accountBar button,
-.importBar button,
 .cloudError button,
 .cloudMessage button {
   padding: 7px 12px;
@@ -42,10 +40,6 @@
   border: 1px solid #aac4b7;
   border-radius: 8px;
   font-weight: 700;
-}
-.importBar {
-  justify-content: center;
-  background: #fff8e9;
 }
 .cloudError {
   padding: 12px 24px;
@@ -65,6 +59,71 @@
 .cloudMessage h1,
 .cloudMessage p {
   margin: 0;
+}
+.dateBar {
+  margin: 24px 0;
+  padding: 24px;
+  background: white;
+  border: 1px solid #aac4b7;
+  border-radius: 16px;
+}
+.tabs {
+  display: flex;
+  gap: 8px;
+  margin: 24px 0;
+}
+.tabs button {
+  padding: 12px 24px;
+  border: 1px solid #aac4b7;
+  border-radius: 10px;
+  background: white;
+  color: var(--green);
+  font: inherit;
+  font-weight: 700;
+}
+.tabs button[aria-current='page'] {
+  background: var(--green);
+  color: white;
+}
+.tabs button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+.dateBar h2 {
+  margin: 0 0 16px;
+}
+.dateBar p {
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.6;
+}
+.dateControls {
+  display: flex;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.dateControls label {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+}
+.dateBar button,
+.dateBar input,
+.dateBar select {
+  min-height: 40px;
+  padding: 8px 12px;
+  color: var(--green);
+  background: #f5f7f2;
+  border: 1px solid #aac4b7;
+  border-radius: 8px;
+  font: inherit;
+}
+.dateBar button:disabled,
+.dateBar input:disabled,
+.dateBar select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 @media (max-width: 760px) {
   .accountBar {

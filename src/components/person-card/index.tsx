@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { CircleDollarSign, Plus, ShoppingBag, Trash2, X } from 'lucide-react'
+import { CircleDollarSign, Plus, ShoppingBag, X } from 'lucide-react'
 import type { Sale } from '../../types/commission'
 import type { PersonCardProps } from '../../types/person-card'
 import {
@@ -19,8 +19,6 @@ function getSaleInputValue(sale: Sale, isFocused: boolean) {
 export function PersonCard({
   person,
   index,
-  onUpdatePerson,
-  onRemovePerson,
   onAddSale,
   onUpdateSale,
   onRemoveSale,
@@ -39,68 +37,17 @@ export function PersonCard({
 
       <div className={styles['person-content']}>
         <div className={styles['person-header']}>
-          <label className={styles['name-field']}>
-            <span className="sr-only">Nome da pessoa</span>
-            <input
-              value={person.name}
-              onChange={(event) =>
-                onUpdatePerson(person.id, 'name', event.target.value)
-              }
-              aria-label={`Nome da pessoa ${index + 1}`}
-            />
-          </label>
-          <button
-            className={styles['delete-button']}
-            type="button"
-            onClick={() => onRemovePerson(person.id)}
-            aria-label={`Remover ${person.name || `pessoa ${index + 1}`}`}
-          >
-            <Trash2 size={18} />
-          </button>
+          <h3>{person.name || 'Sem nome'}</h3>
         </div>
-
         <div className={styles['fields-grid']}>
-          <label className={styles['field']}>
+          <div className={styles['field']}>
             <span>Percentual</span>
-            <div
-              className={[
-                styles['input-wrap'],
-                styles['input-wrap--suffix'],
-              ].join(' ')}
-            >
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={person.percentage}
-                onChange={(event) =>
-                  onUpdatePerson(person.id, 'percentage', event.target.value)
-                }
-              />
-              <span>%</span>
-            </div>
-          </label>
-
-          <label className={styles['field']}>
-            <span>Valor fixo</span>
-            <div
-              className={[
-                styles['input-wrap'],
-                styles['input-wrap--prefix'],
-              ].join(' ')}
-            >
-              <span>R$</span>
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={person.fixedAmount}
-                onChange={(event) =>
-                  onUpdatePerson(person.id, 'fixedAmount', event.target.value)
-                }
-              />
-            </div>
-          </label>
+            <strong>{person.percentage.toLocaleString('pt-BR')}%</strong>
+          </div>
+          <div className={styles['field']}>
+            <span>Valor fixo deste dia</span>
+            <strong>{currency.format(person.fixedAmount)}</strong>
+          </div>
         </div>
 
         <div className={styles['sales-box']}>
