@@ -1,11 +1,11 @@
-import styles from './style.module.css'
-import { AppFooter } from '../components/app-footer'
-import { AppHeader } from '../components/app-header'
 import { CommissionSection } from '../components/commission-section'
+import { Footer } from '../components/footer'
+import { Header } from '../components/header'
 import { Hero } from '../components/hero'
 import { SummaryCards } from '../components/summary-cards'
-import { useCommissionPeople } from '../hooks/useCommissionPeople'
-import { exportSummary } from '../utils/exportSummary'
+import { useCommissionPeople } from '../hooks/use-commission-people'
+import { exportSummary } from '../utils/export-summary'
+import styles from './style.module.css'
 
 function App() {
   const {
@@ -21,7 +21,7 @@ function App() {
 
   return (
     <div className={styles['app-shell']}>
-      <AppHeader />
+      <Header />
 
       <main id="top" className={styles.main}>
         <Hero />
@@ -41,7 +41,7 @@ function App() {
         />
       </main>
 
-      <AppFooter />
+      <Footer />
     </div>
   )
 }

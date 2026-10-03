@@ -1,7 +1,7 @@
 import styles from './style.module.css'
 import { TrendingUp } from 'lucide-react'
 
-export function AppFooter() {
+export function Footer() {
   return (
     <footer className={styles.footer}>
       <span className={[styles['brand'], styles['brand--small']].join(' ')}>

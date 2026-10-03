@@ -122,26 +122,26 @@ src/
 ├── assets/               # Recursos visuais
 ├── app/                  # Composição da tela: index.tsx e style.module.css
 ├── components/           # Uma pasta por componente, com index.tsx e style.module.css
-│   ├── app-header/
-│   ├── app-footer/
+│   ├── header/
+│   ├── footer/
 │   ├── hero/
 │   ├── summary-cards/
 │   ├── commission-section/
 │   └── person-card/
 ├── hooks/
-│   └── useCommissionPeople.ts  # Estado, edição e persistência da equipe
+│   └── use-commission-people.ts # Estado, edição e persistência da equipe
 ├── types/
 │   └── commission.ts     # Tipos de pessoas, vendas e totais
 ├── utils/
 │   ├── commission.ts     # Cálculos, formatação e leitura dos dados salvos
-│   └── exportSummary.ts  # Geração e download do PNG
+│   └── export-summary.ts  # Geração e download do PNG
 ├── index.css             # Tokens, estilos básicos e acessibilidade globais
 └── main.tsx              # Entrada da aplicação
 ```
 
 ## Desenvolvimento
 
-Os cálculos e a formatação monetária ficam em `src/utils/commission.ts`. As alterações da equipe e o salvamento ficam em `src/hooks/useCommissionPeople.ts`, e a exportação fica em `src/utils/exportSummary.ts`.
+Os cálculos e a formatação monetária ficam em `src/utils/commission.ts`. As alterações da equipe e o salvamento ficam em `src/hooks/use-commission-people.ts`, e a exportação fica em `src/utils/export-summary.ts`.
 
 Cada componente fica em `src/components/nome-do-componente/`, com a implementação e exportação em `index.tsx` e os estilos em `style.module.css`. As pastas usam letras minúsculas e palavras separadas por hífen (kebab-case). A composição da aplicação segue o mesmo padrão em `src/app/`. Importe o CSS Module no próprio componente e use as classes pelo objeto `styles`. Regras responsivas ficam no mesmo arquivo de estilos do componente; tokens e regras globais ficam em `src/index.css`.
 

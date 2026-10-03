@@ -1,7 +1,7 @@
 import styles from './style.module.css'
 import { TrendingUp } from 'lucide-react'
 
-export function AppHeader() {
+export function Header() {
   return (
     <header className={styles['topbar']}>
       <a className={styles['brand']} href="#top" aria-label="Comissão Plus — início">
