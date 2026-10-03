@@ -80,15 +80,15 @@ Operações que precisem de execução no servidor poderão usar funções de ba
 
 ### Modelo de dados inicial
 
-| Entidade | Responsabilidade |
-| --- | --- |
-| Conta | Identidade do administrador/gerente, gerenciada pela autenticação. |
-| Equipe | Nome, proprietário e fuso utilizado para os dias de trabalho. |
-| Pessoa | Cadastro, regras padrão de comissão e estado ativo/arquivado. |
-| Regra de valor fixo | Pessoa, valor, periodicidade e vigência, preservando versões anteriores. |
+| Entidade                 | Responsabilidade                                                                                                 |
+| ------------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| Conta                    | Identidade do administrador/gerente, gerenciada pela autenticação.                                               |
+| Equipe                   | Nome, proprietário e fuso utilizado para os dias de trabalho.                                                    |
+| Pessoa                   | Cadastro, regras padrão de comissão e estado ativo/arquivado.                                                    |
+| Regra de valor fixo      | Pessoa, valor, periodicidade e vigência, preservando versões anteriores.                                         |
 | Lançamento de valor fixo | Pessoa, regra histórica, período de referência, data de atribuição e valor aplicado, sem duplicação por período. |
-| Registro diário | Equipe, pessoa, data, nome histórico e percentual aplicado. |
-| Venda | Registro diário associado e valor monetário. |
+| Registro diário          | Equipe, pessoa, data, nome histórico e percentual aplicado.                                                      |
+| Venda                    | Registro diário associado e valor monetário.                                                                     |
 
 Deve existir no máximo um registro diário por pessoa, equipe e data. Valores monetários devem usar centavos inteiros ou um tipo decimal exato, evitando erros de ponto flutuante na persistência e nos relatórios.
 
@@ -102,13 +102,13 @@ Oferecer uma prévia para importar o estado atual para a conta autenticada e ped
 
 ## Decisões pendentes
 
-| Tema | Definição necessária |
-| --- | --- |
+| Tema                    | Definição necessária                                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Aplicação do valor fixo | Como tratar períodos sem vendas, períodos parciais e mudanças de regra durante a semana ou o mês? Em qual data atribuir o fixo semanal/mensal para consolidar relatórios? |
-| Semana | Qual é o primeiro dia da semana e como apresentar semanas que atravessam meses? |
-| Fuso | Confirmar se `America/Sao_Paulo` será o padrão das equipes. |
-| Correções históricas | Como permitir alteração explícita do percentual e do fixo de um dia anterior? |
-| Exportação atual | Manter o resumo diário em PNG além dos novos relatórios em PDF? |
+| Semana                  | Qual é o primeiro dia da semana e como apresentar semanas que atravessam meses?                                                                                           |
+| Fuso                    | Confirmar se `America/Sao_Paulo` será o padrão das equipes.                                                                                                               |
+| Correções históricas    | Como permitir alteração explícita do percentual e do fixo de um dia anterior?                                                                                             |
+| Exportação atual        | Manter o resumo diário em PNG além dos novos relatórios em PDF?                                                                                                           |
 
 A periodicidade será escolhida e poderá ser editada pelo gerente. As regras de aplicação em períodos parciais e sem vendas precisam ser definidas antes de implementar os cálculos dos relatórios. As regras atuais somam o fixo mesmo sem vendas, mas não possuem uma unidade de tempo.
 
