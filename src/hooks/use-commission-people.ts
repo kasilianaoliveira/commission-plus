@@ -20,9 +20,9 @@ export const loadLocalPeople = () => {
     const storedPeople = localStorage.getItem(STORAGE_KEY)
     if (storedPeople) return parseStoredPeople(storedPeople)
 
-    const legacyPeople = LEGACY_STORAGE_KEYS
-      .map((key) => localStorage.getItem(key))
-      .find((value) => value !== null)
+    const legacyPeople = LEGACY_STORAGE_KEYS.map((key) =>
+      localStorage.getItem(key),
+    ).find((value) => value !== null)
     if (!legacyPeople) return null
 
     const migratedPeople = parseStoredPeople(legacyPeople)
@@ -34,7 +34,13 @@ export const loadLocalPeople = () => {
       ? migratedPeople
       : [
           ...migratedPeople,
-          { id: 'ana', name: 'Ana', percentage: 10, fixedAmount: 33.33, sales: [] },
+          {
+            id: 'ana',
+            name: 'Ana',
+            percentage: 10,
+            fixedAmount: 33.33,
+            sales: [],
+          },
         ]
   } catch {
     return null
@@ -66,9 +72,7 @@ export function useCommissionPeople(initial: Person[] = initialPeople) {
           ? {
               ...person,
               [field]:
-                field === 'name'
-                  ? value
-                  : Math.max(0, Number(value) || 0),
+                field === 'name' ? value : Math.max(0, Number(value) || 0),
             }
           : person,
       ),
@@ -111,7 +115,8 @@ export function useCommissionPeople(initial: Person[] = initialPeople) {
     if (!/^\d*(?:[.,]\d*)?$/.test(value)) return
 
     const amount = value.replace(',', '.')
-    if (amount !== '' && amount !== '.' && !Number.isFinite(Number(amount))) return
+    if (amount !== '' && amount !== '.' && !Number.isFinite(Number(amount)))
+      return
 
     setPeople((currentPeople) =>
       currentPeople.map((person) =>

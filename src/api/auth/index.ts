@@ -71,6 +71,9 @@ export function useAuthAction() {
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
+          options: {
+            emailRedirectTo: window.location.origin,
+          },
         })
         if (error?.code === 'user_already_exists') {
           throw new Error(

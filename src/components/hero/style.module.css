@@ -1,4 +1,6 @@
-.hero-copy { padding: 80px 0 42px; }
+.hero-copy {
+  padding: 80px 0 42px;
+}
 
 .eyebrow {
   display: flex;
@@ -7,7 +9,7 @@
   color: var(--green);
   font-size: 12px;
   font-weight: 700;
-  letter-spacing: .13em;
+  letter-spacing: 0.13em;
   text-transform: uppercase;
 }
 
@@ -22,11 +24,23 @@
   letter-spacing: -4px;
 }
 
-.hero-copy h1 em { color: var(--green); font-style: normal; }
+.hero-copy h1 em {
+  color: var(--green);
+  font-style: normal;
+}
 
-.hero-copy > p { max-width: 590px; color: var(--muted); font-size: 17px; line-height: 1.65; }
+.hero-copy > p {
+  max-width: 590px;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
 
 @media (max-width: 760px) {
-  .hero-copy { padding: 54px 0 34px; }
-  .hero-copy h1 { letter-spacing: -2.5px; }
+  .hero-copy {
+    padding: 54px 0 34px;
+  }
+  .hero-copy h1 {
+    letter-spacing: -2.5px;
+  }
 }

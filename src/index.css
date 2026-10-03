@@ -16,11 +16,24 @@
   --paper: #ffffff;
 }
 
-* { box-sizing: border-box; }
-html { scroll-behavior: smooth; }
-body { margin: 0; min-width: 320px; min-height: 100vh; }
-button, input { font: inherit; }
-button { cursor: pointer; }
+* {
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+button,
+input {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+}
 
 .sr-only {
   position: absolute;
@@ -34,10 +47,21 @@ button { cursor: pointer; }
   border: 0;
 }
 
-#root { min-height: 100vh; }
+#root {
+  min-height: 100vh;
+}
 
-button:focus-visible, input:focus-visible { outline: 3px solid rgba(25,107,75,.22); outline-offset: 2px; }
+button:focus-visible,
+input:focus-visible {
+  outline: 3px solid rgba(25, 107, 75, 0.22);
+  outline-offset: 2px;
+}
 
 @media (prefers-reduced-motion: reduce) {
-*, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; }
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
 }

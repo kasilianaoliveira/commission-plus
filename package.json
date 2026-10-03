@@ -7,11 +7,12 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "test": "node --experimental-strip-types --test tests/*.test.mjs && vitest run --environment jsdom tests/query.test.ts",
+    "test": "vitest run --environment jsdom",
     "preview": "vite preview",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
-    "format:check": "prettier . --check"
+    "format:check": "prettier . --check",
+    "test:watch": "vitest --environment jsdom"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.117.2",

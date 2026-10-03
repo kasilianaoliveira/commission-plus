@@ -1,17 +1,7 @@
-import styles from './style.module.css'
 import { Plus, Users } from 'lucide-react'
-import type { Person, PersonField } from '../../types/commission'
+import type { CommissionSectionProps } from '../../types/commission-section'
 import { PersonCard } from '../person-card'
-
-type CommissionSectionProps = {
-  people: Person[]
-  onAddPerson: () => void
-  onRemovePerson: (id: string) => void
-  onUpdatePerson: (id: string, field: PersonField, value: string) => void
-  onAddSale: (personId: string) => void
-  onUpdateSale: (personId: string, saleId: string, value: string) => void
-  onRemoveSale: (personId: string, saleId: string) => void
-}
+import styles from './style.module.css'
 
 export function CommissionSection({
   people,
@@ -30,8 +20,16 @@ export function CommissionSection({
           <h2>Comissões individuais</h2>
           <p>Edite os campos abaixo para recalcular automaticamente.</p>
         </div>
-        <button className={styles['add-button']} type="button" onClick={onAddPerson}>
-          <Plus size={18} strokeWidth={2.5} /> Adicionar pessoa
+        <button
+          className={styles['add-button']}
+          type="button"
+          onClick={onAddPerson}
+        >
+          <Plus
+            size={18}
+            strokeWidth={2.5}
+          />{' '}
+          Adicionar pessoa
         </button>
       </div>
 
@@ -54,7 +52,11 @@ export function CommissionSection({
             <Users size={28} />
             <h3>Nenhuma pessoa adicionada</h3>
             <p>Adicione alguém para começar a calcular.</p>
-            <button className={styles['add-button']} type="button" onClick={onAddPerson}>
+            <button
+              className={styles['add-button']}
+              type="button"
+              onClick={onAddPerson}
+            >
               <Plus size={18} /> Adicionar pessoa
             </button>
           </div>

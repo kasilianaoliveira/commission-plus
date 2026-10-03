@@ -1,5 +1,5 @@
-import styles from './style.module.css'
 import { TrendingUp } from 'lucide-react'
+import styles from './style.module.css'
 
 export function Footer() {
   return (

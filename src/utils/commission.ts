@@ -1,4 +1,4 @@
-import type { Person, Sale } from '../types/commission'
+import type { Person, Sale, StoredPerson } from '../types/commission'
 
 export const STORAGE_KEY = 'commission-plus:people:v4'
 export const LEGACY_STORAGE_KEYS = [
@@ -9,10 +9,34 @@ export const LEGACY_STORAGE_KEYS = [
 const preferredOrder = ['lucas', 'luciano', 'adriele', 'ana']
 
 export const initialPeople: Person[] = [
-  { id: 'lucas', name: 'Lucas', percentage: 20, fixedAmount: 53.33, sales: [{ id: 'lucas-sale-1', amount: 0 }] },
-  { id: 'luciano', name: 'Luciano', percentage: 10, fixedAmount: 33.33, sales: [{ id: 'luciano-sale-1', amount: 0 }] },
-  { id: 'adriele', name: 'Adriele', percentage: 10, fixedAmount: 33.33, sales: [{ id: 'adriele-sale-1', amount: 0 }] },
-  { id: 'ana', name: 'Ana', percentage: 10, fixedAmount: 33.33, sales: [{ id: 'ana-sale-1', amount: 0 }] },
+  {
+    id: 'lucas',
+    name: 'Lucas',
+    percentage: 20,
+    fixedAmount: 53.33,
+    sales: [{ id: 'lucas-sale-1', amount: 0 }],
+  },
+  {
+    id: 'luciano',
+    name: 'Luciano',
+    percentage: 10,
+    fixedAmount: 33.33,
+    sales: [{ id: 'luciano-sale-1', amount: 0 }],
+  },
+  {
+    id: 'adriele',
+    name: 'Adriele',
+    percentage: 10,
+    fixedAmount: 33.33,
+    sales: [{ id: 'adriele-sale-1', amount: 0 }],
+  },
+  {
+    id: 'ana',
+    name: 'Ana',
+    percentage: 10,
+    fixedAmount: 33.33,
+    sales: [{ id: 'ana-sale-1', amount: 0 }],
+  },
 ]
 
 export const currency = new Intl.NumberFormat('pt-BR', {
@@ -27,19 +51,14 @@ const saleAmountFormat = new Intl.NumberFormat('pt-BR', {
 })
 
 export const formatSaleAmount = (amount: Sale['amount']) =>
-  amount === '' || amount === '.'
-    ? ''
-    : saleAmountFormat.format(Number(amount))
+  amount === '' || amount === '.' ? '' : saleAmountFormat.format(Number(amount))
 
 const roundToCents = (value: number) =>
   Math.round((value + Number.EPSILON) * 100) / 100
 
 export const getSalesTotal = (person: Person) =>
   roundToCents(
-    person.sales.reduce(
-      (total, sale) => total + (Number(sale.amount) || 0),
-      0,
-    ),
+    person.sales.reduce((total, sale) => total + (Number(sale.amount) || 0), 0),
   )
 
 export const calculateCommission = (person: Person) => {
@@ -61,7 +80,9 @@ export const createId = () =>
 export const sortPeople = (people: Person[]) =>
   [...people].sort((firstPerson, secondPerson) => {
     const firstPosition = preferredOrder.indexOf(firstPerson.name.toLowerCase())
-    const secondPosition = preferredOrder.indexOf(secondPerson.name.toLowerCase())
+    const secondPosition = preferredOrder.indexOf(
+      secondPerson.name.toLowerCase(),
+    )
 
     return (
       (firstPosition === -1 ? preferredOrder.length : firstPosition) -
@@ -70,20 +91,16 @@ export const sortPeople = (people: Person[]) =>
   })
 
 export const parseStoredPeople = (storedValue: string): Person[] => {
-  const parsed = JSON.parse(storedValue) as Array<
-    Partial<Person> & { salesAmount?: number }
-  >
+  const parsed = JSON.parse(storedValue) as StoredPerson[]
 
   if (!Array.isArray(parsed)) return initialPeople
 
   const people = parsed.map((person, personIndex): Person => {
     const sales = Array.isArray(person.sales)
-      ? person.sales.map(
-          (sale): Sale => ({
-            id: sale.id || createId(),
-            amount: sale.amount === '' ? '' : Number(sale.amount) || 0,
-          }),
-        )
+      ? person.sales.map((sale): Sale => ({
+          id: sale.id || createId(),
+          amount: sale.amount === '' ? '' : Number(sale.amount) || 0,
+        }))
       : [{ id: createId(), amount: Number(person.salesAmount) || 0 }]
 
     return {

@@ -1,28 +1,19 @@
-import styles from './style.module.css'
 import { useState } from 'react'
-import {
-  CircleDollarSign,
-  Plus,
-  ShoppingBag,
-  Trash2,
-  X,
-} from 'lucide-react'
-import type { Person, PersonField } from '../../types/commission'
+import { CircleDollarSign, Plus, ShoppingBag, Trash2, X } from 'lucide-react'
+import type { Sale } from '../../types/commission'
+import type { PersonCardProps } from '../../types/person-card'
 import {
   calculateCommission,
   currency,
   formatSaleAmount,
   getSalesTotal,
 } from '../../utils/commission'
+import styles from './style.module.css'
 
-type PersonCardProps = {
-  person: Person
-  index: number
-  onUpdatePerson: (id: string, field: PersonField, value: string) => void
-  onRemovePerson: (id: string) => void
-  onAddSale: (personId: string) => void
-  onUpdateSale: (personId: string, saleId: string, value: string) => void
-  onRemoveSale: (personId: string, saleId: string) => void
+function getSaleInputValue(sale: Sale, isFocused: boolean) {
+  if (sale.amount === 0) return ''
+  if (isFocused) return String(sale.amount).replace('.', ',')
+  return formatSaleAmount(sale.amount)
 }
 
 export function PersonCard({
@@ -39,7 +30,10 @@ export function PersonCard({
 
   return (
     <article className={styles['person-card']}>
-      <div className={styles['person-number']} aria-hidden="true">
+      <div
+        className={styles['person-number']}
+        aria-hidden="true"
+      >
         {String(index + 1).padStart(2, '0')}
       </div>
 
@@ -68,7 +62,12 @@ export function PersonCard({
         <div className={styles['fields-grid']}>
           <label className={styles['field']}>
             <span>Percentual</span>
-            <div className={[styles['input-wrap'], styles['input-wrap--suffix']].join(' ')}>
+            <div
+              className={[
+                styles['input-wrap'],
+                styles['input-wrap--suffix'],
+              ].join(' ')}
+            >
               <input
                 type="number"
                 min="0"
@@ -84,7 +83,12 @@ export function PersonCard({
 
           <label className={styles['field']}>
             <span>Valor fixo</span>
-            <div className={[styles['input-wrap'], styles['input-wrap--prefix']].join(' ')}>
+            <div
+              className={[
+                styles['input-wrap'],
+                styles['input-wrap--prefix'],
+              ].join(' ')}
+            >
               <span>R$</span>
               <input
                 type="number"
@@ -116,11 +120,19 @@ export function PersonCard({
           <div className={styles['sales-list']}>
             <div className={styles['sales-entries']}>
               {person.sales.map((sale, saleIndex) => (
-                <div className={styles['sale-row']} key={sale.id}>
+                <div
+                  className={styles['sale-row']}
+                  key={sale.id}
+                >
                   <label htmlFor={`sale-${sale.id}`}>
                     Venda {String(saleIndex + 1).padStart(2, '0')}
                   </label>
-                  <div className={[styles['input-wrap'], styles['input-wrap--prefix']].join(' ')}>
+                  <div
+                    className={[
+                      styles['input-wrap'],
+                      styles['input-wrap--prefix'],
+                    ].join(' ')}
+                  >
                     <span>R$</span>
                     <input
                       id={`sale-${sale.id}`}
@@ -128,19 +140,17 @@ export function PersonCard({
                       inputMode="decimal"
                       pattern="[0-9]*([.,][0-9]*)?"
                       placeholder="0,00"
-                      value={
-                        sale.amount === 0
-                          ? ''
-                          : focusedSaleId === sale.id
-                            ? String(sale.amount).replace('.', ',')
-                            : formatSaleAmount(sale.amount)
-                      }
+                      value={getSaleInputValue(sale, focusedSaleId === sale.id)}
                       onFocus={(event) => {
                         setFocusedSaleId(sale.id)
                         event.currentTarget.select()
                       }}
                       onBlur={() => {
-                        onUpdateSale(person.id, sale.id, formatSaleAmount(sale.amount))
+                        onUpdateSale(
+                          person.id,
+                          sale.id,
+                          formatSaleAmount(sale.amount),
+                        )
                         setFocusedSaleId(null)
                       }}
                       onChange={(event) =>

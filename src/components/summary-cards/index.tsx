@@ -1,22 +1,21 @@
-import styles from './style.module.css'
 import { useState } from 'react'
 import { Download, ReceiptText, Users, WalletCards } from 'lucide-react'
-import type { CommissionSummary } from '../../types/commission'
+import type { SummaryCardsProps } from '../../types/summary-cards'
 import { currency } from '../../utils/commission'
+import styles from './style.module.css'
 
-type SummaryCardsProps = {
-  summary: CommissionSummary
-  peopleCount: number
-  onExport: () => Promise<void>
-}
-
-export function SummaryCards({ summary, peopleCount, onExport }: SummaryCardsProps) {
+export function SummaryCards({
+  summary,
+  peopleCount,
+  onExport,
+}: SummaryCardsProps) {
   const [exporting, setExporting] = useState(false)
   const [exportError, setExportError] = useState('')
 
   const handleExport = async () => {
     setExporting(true)
     setExportError('')
+
     try {
       await onExport()
     } catch {
@@ -33,42 +32,58 @@ export function SummaryCards({ summary, peopleCount, onExport }: SummaryCardsPro
           <h2>Resumo do dia</h2>
           <p>Exporte os valores atuais para compartilhar com o dono.</p>
         </div>
-        <button className={styles['export-button']} type="button" onClick={handleExport} disabled={exporting}>
-          <Download size={18} aria-hidden="true" />
-          {exporting ? 'Gerando imagem…' : 'Exportar imagem'} <span className={styles['export-format']}>PNG</span>
+        <button
+          className={styles['export-button']}
+          type="button"
+          onClick={handleExport}
+          disabled={exporting}
+        >
+          <Download
+            size={18}
+            aria-hidden="true"
+          />
+          {exporting ? 'Gerando imagem…' : 'Exportar imagem'}{' '}
+          <span className={styles['export-format']}>PNG</span>
         </button>
       </div>
+
       {exportError && <p role="alert">{exportError}</p>}
+
       <div className={styles['summary-grid']}>
-      <article className={[styles['summary-card'], styles['summary-card--primary']].join(' ')}>
-        <span className={styles['summary-icon']}>
-          <ReceiptText size={21} />
-        </span>
-        <div>
-          <small>Total vendido</small>
-          <strong>{currency.format(summary.sales)}</strong>
-        </div>
-      </article>
+        <article
+          className={[
+            styles['summary-card'],
+            styles['summary-card--primary'],
+          ].join(' ')}
+        >
+          <span className={styles['summary-icon']}>
+            <ReceiptText size={21} />
+          </span>
+          <div>
+            <small>Total vendido</small>
+            <strong>{currency.format(summary.sales)}</strong>
+          </div>
+        </article>
 
-      <article className={styles['summary-card']}>
-        <span className={styles['summary-icon']}>
-          <WalletCards size={21} />
-        </span>
-        <div>
-          <small>Total em comissões</small>
-          <strong>{currency.format(summary.commissions)}</strong>
-        </div>
-      </article>
+        <article className={styles['summary-card']}>
+          <span className={styles['summary-icon']}>
+            <WalletCards size={21} />
+          </span>
+          <div>
+            <small>Total em comissões</small>
+            <strong>{currency.format(summary.commissions)}</strong>
+          </div>
+        </article>
 
-      <article className={styles['summary-card']}>
-        <span className={styles['summary-icon']}>
-          <Users size={21} />
-        </span>
-        <div>
-          <small>Pessoas</small>
-          <strong>{peopleCount}</strong>
-        </div>
-      </article>
+        <article className={styles['summary-card']}>
+          <span className={styles['summary-icon']}>
+            <Users size={21} />
+          </span>
+          <div>
+            <small>Pessoas</small>
+            <strong>{peopleCount}</strong>
+          </div>
+        </article>
       </div>
     </section>
   )

@@ -42,12 +42,12 @@ Comissão total = comissão percentual + valor fixo
 
 Por exemplo, para uma pessoa com **R$ 1.000,00 em vendas**, **10% de comissão** e **R$ 33,33 de valor fixo**:
 
-| Item | Valor |
-| --- | ---: |
-| Total vendido | R$ 1.000,00 |
-| Comissão percentual (10%) | R$ 100,00 |
-| Valor fixo | R$ 33,33 |
-| **Comissão total** | **R$ 133,33** |
+| Item                      |         Valor |
+| ------------------------- | ------------: |
+| Total vendido             |   R$ 1.000,00 |
+| Comissão percentual (10%) |     R$ 100,00 |
+| Valor fixo                |      R$ 33,33 |
+| **Comissão total**        | **R$ 133,33** |
 
 Os resultados monetários são arredondados para duas casas decimais. O valor fixo é somado mesmo quando não há vendas.
 
@@ -72,13 +72,17 @@ Antes de iniciar, preencha `.env.local` e aplique a migração SQL no projeto Su
 
 ### Comandos disponíveis
 
-| Comando | O que faz |
-| --- | --- |
-| `pnpm dev` | Inicia o servidor de desenvolvimento. |
-| `pnpm build` | Verifica os tipos e gera a aplicação em `dist/`. |
-| `pnpm preview` | Disponibiliza o build para conferência local. |
-| `pnpm lint` | Verifica o código com ESLint. |
-| `pnpm test` | Verifica as regras de senha. |
+| Comando             | O que faz                                                              |
+| ------------------- | ---------------------------------------------------------------------- |
+| `pnpm dev`          | Inicia o servidor de desenvolvimento.                                  |
+| `pnpm build`        | Verifica os tipos e gera a aplicação em `dist/`.                       |
+| `pnpm preview`      | Disponibiliza o build para conferência local.                          |
+| `pnpm lint`         | Verifica o código e a formatação com ESLint e Prettier.                |
+| `pnpm lint:fix`     | Corrige os problemas de lint que podem ser resolvidos automaticamente. |
+| `pnpm format`       | Formata os arquivos do projeto com Prettier.                           |
+| `pnpm format:check` | Confere a formatação sem alterar arquivos.                             |
+| `pnpm test`         | Executa todos os testes com Vitest.                                    |
+| `pnpm test:watch`   | Executa o Vitest em modo watch durante o desenvolvimento.              |
 
 Para conferir a versão de produção localmente:
 
@@ -107,19 +111,20 @@ O resumo apresenta os valores atuais da tela; os registros não são separados a
 
 ## Tecnologias
 
-| Tecnologia | Uso |
-| --- | --- |
-| React 19 | Interface e componentes. |
-| TypeScript | Tipagem dos dados e do código. |
-| Vite 8 | Desenvolvimento e build. |
-| Lucide React | Ícones da interface. |
-| React Hook Form | Estado, validação e envio dos formulários de autenticação. |
-| TanStack React Query | Consultas, cache e mutações dos dados do Supabase. |
-| CSS Modules | Estilos isolados por componente. |
-| Canvas API | Geração do resumo em PNG. |
-| Supabase Auth e PostgreSQL | Login e persistência dos dados atuais da equipe. |
-| localStorage | Fonte dos dados da versão anterior para importação opcional. |
-| ESLint | Verificação do código. |
+| Tecnologia                 | Uso                                                          |
+| -------------------------- | ------------------------------------------------------------ |
+| React 19                   | Interface e componentes.                                     |
+| TypeScript                 | Tipagem dos dados e do código.                               |
+| Vite 8                     | Desenvolvimento e build.                                     |
+| Lucide React               | Ícones da interface.                                         |
+| React Hook Form            | Estado, validação e envio dos formulários de autenticação.   |
+| TanStack React Query       | Consultas, cache e mutações dos dados do Supabase.           |
+| CSS Modules                | Estilos isolados por componente.                             |
+| Canvas API                 | Geração do resumo em PNG.                                    |
+| Supabase Auth e PostgreSQL | Login e persistência dos dados atuais da equipe.             |
+| localStorage               | Fonte dos dados da versão anterior para importação opcional. |
+| ESLint e Prettier          | Verificação do código e padronização da formatação.          |
+| Vitest e Testing Library   | Testes de regras de negócio e hooks React.                   |
 
 ## Estrutura do projeto
 
@@ -137,15 +142,15 @@ src/
 │   ├── person-card/
 │   ├── auth-panel/
 │   └── password-update/
+├── api/                  # Hooks do React Query por tipo de chamada
+│   ├── auth/             # Sessão, login, cadastro, senha e saída da conta
+│   └── workspace/        # Consulta e salvamento da área do gerente
 ├── hooks/
-│   ├── use-auth.ts       # Sessão e saída da conta
-│   ├── use-workspace.ts  # Consulta e salvamento da área do gerente
 │   └── use-commission-people.ts # Estado e edição da equipe
 ├── lib/
 │   ├── query-client.ts   # Configuração do cache do React Query
 │   └── supabase.ts       # Cliente Supabase
-├── types/
-│   └── commission.ts     # Tipos de pessoas, vendas e totais
+├── types/                # Tipos de domínio, formulários e props de componentes
 ├── utils/
 │   ├── commission.ts     # Cálculos, formatação e leitura dos dados salvos
 │   └── export-summary.ts  # Geração e download do PNG
@@ -156,15 +161,23 @@ supabase/migrations/      # Estrutura e permissões do banco
 
 ## Desenvolvimento
 
-Os cálculos e a formatação monetária ficam em `src/utils/commission.ts`. As edições da equipe ficam em `src/hooks/use-commission-people.ts`. As consultas e mutações do Supabase ficam nos hooks `use-auth.ts` e `use-workspace.ts`, com o cache configurado em `src/lib/query-client.ts`. A exportação PNG fica em `src/utils/export-summary.ts`.
+Os cálculos e a formatação monetária ficam em `src/utils/commission.ts`. As edições da equipe ficam em `src/hooks/use-commission-people.ts`. As consultas e mutações do Supabase ficam em `src/api/auth/` e `src/api/workspace/`, com o cache configurado em `src/lib/query-client.ts`. As declarações de tipos ficam em `src/types/`. A exportação PNG fica em `src/utils/export-summary.ts`.
 
 Cada componente fica em `src/components/nome-do-componente/`, com a implementação e exportação em `index.tsx` e os estilos em `style.module.css`. As pastas usam letras minúsculas e palavras separadas por hífen (kebab-case). A composição da aplicação segue o mesmo padrão em `src/app/`. Importe o CSS Module no próprio componente e use as classes pelo objeto `styles`. Regras responsivas ficam no mesmo arquivo de estilos do componente; tokens e regras globais ficam em `src/index.css`.
 
 Os formulários de cadastro, login, recuperação e definição de nova senha usam React Hook Form. Os campos da calculadora usam o estado compartilhado em `use-commission-people.ts`, que alimenta os cálculos e o salvamento automático.
 
+A formatação é definida em `.prettierrc.json`: indentação de 2 espaços, aspas simples, sem ponto e vírgula e uma prop por linha em JSX. O ESLint também aponta desvios dessas regras.
+
+No VS Code, instale as extensões recomendadas **Prettier** (`esbenp.prettier-vscode`) e **ESLint** (`dbaeumer.vscode-eslint`). As configurações versionadas em `.vscode/settings.json` ativam a formatação e as correções do ESLint ao salvar. Para formatar pelo terminal, use `pnpm format`.
+
+Os testes usam Vitest e ficam em `tests/`, em arquivos `*.test.ts` ou `*.test.tsx`. Use as funções de teste, asserções e mocks do Vitest; para hooks e componentes React, use Testing Library com o ambiente jsdom.
+
 Antes de enviar alterações, execute:
 
 ```bash
 pnpm lint
+pnpm format:check
+pnpm test
 pnpm build
 ```
